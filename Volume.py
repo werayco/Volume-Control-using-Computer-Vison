@@ -11,8 +11,8 @@ from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 class volm:
     def __init__(self):
         # Initialize audio control
-        self.devicesList = AudioUtilities.GetSpeakers()
-        self.interface = self.devicesList.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+        self.defSpeaker = AudioUtilities.GetSpeakers() # this part basically uses your default speaker
+        self.interface = self.defSpeaker.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
         self.volume = cast(self.interface, POINTER(IAudioEndpointVolume))
 
         self.mp_hands = hands
@@ -35,12 +35,12 @@ class volm:
             if not is_true:
                 break
 
-            img2rgb = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-            results = self.hands_detector.process(img2rgb)
+            img2rgb = cv.cvtColor(frame, cv.COLOR_BGR2RGB) # mediapipe uses rbg images
+            results = self.hands_detector.process(img2rgb) 
             h, w, _ = frame.shape
 
             lmlist = []
-            if results.multi_hand_landmarks:
+            if results.multi_hand_landmarks: # this is a list of hands,where each hand is a list of normalized landmark eg x,y,z which ranges from 0 to 1
                 onehand = results.multi_hand_landmarks[0]
                 for id, landmark in enumerate(onehand.landmark):
 
